@@ -19,11 +19,11 @@ void clienterror(int fd, char *cause, char *errnum,
 void sigchld_handler(int sig);
 
 static int print_number_test = 0;
-void sigchld_handler(int sig){
-  while(waitpid(-1, 0, WNOHANG) > 0)
-    ;
-  return;
-}
+// void sigchld_handler(int sig){
+//   while(waitpid(-1, 0, WNOHANG) > 0)
+//     ;
+//   return;
+// }
 
 
 int main(int argc, char **argv)
@@ -40,18 +40,18 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  Signal(SIGCHLD, sigchld_handler);
+  // Signal(SIGCHLD, sigchld_handler);
   listenfd = Open_listenfd(argv[1]);
   while (1)
   {
     clientlen = sizeof(clientaddr);
     connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen); // line:netp:tiny:accept
     int pid;
-    if ((pid = Fork()) == 0)
+    if (Fork() == 0)
     {
       print_number_test ++;
       printf("----------------------------------------------------------------\n");
-      printf("process fork(), pid = %d\n", pid);
+      printf("no concurrency, pid = %ld\n", getpid());
       printf("%d\n", print_number_test);
       Getnameinfo((SA *)&clientaddr, clientlen, hostname, MAXLINE,
                   port, MAXLINE, 0);
